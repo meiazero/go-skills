@@ -24,7 +24,7 @@ The **canonical content** is the set of `*.md` files at the repo root. Tool-spec
 
 ```bash
 cd your-go-project
-git clone https://github.com/<your-fork>/uber-golang-skill .uber-golang-skill
+git clone https://github.com/meiazero/uber-golang-skill .uber-golang-skill
 # Move tool-specific files into place (or symlink)
 cp -r .uber-golang-skill/AGENTS.md .uber-golang-skill/.cursor .uber-golang-skill/.windsurf .uber-golang-skill/.github .uber-golang-skill/.claude .
 ```
@@ -34,7 +34,7 @@ Each tool will pick up its own config automatically.
 ### Option B — Use as a Claude Code user-level skill
 
 ```bash
-git clone https://github.com/<your-fork>/uber-golang-skill ~/.claude/skills/uber-go-style
+git clone https://github.com/meiazero/uber-golang-skill ~/.claude/skills/uber-go-style
 ```
 
 Claude Code will auto-load the skill whenever you work on Go code.

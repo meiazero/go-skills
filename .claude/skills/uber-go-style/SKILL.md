@@ -1,6 +1,6 @@
 ---
 name: uber-go-style
-description: Write Go code following the Uber Go Style Guide (uber-go/guide). Covers naming, imports, error handling, concurrency, performance, testing patterns, and linting. Use when writing, reviewing, or refactoring any Go code (.go files, go.mod present), when the user mentions "Uber style", "Go style guide", "idiomatic Go", or asks for code review of Go code. Source: https://github.com/uber-go/guide/blob/master/style.md
+description: 'Write Go code following the Uber Go Style Guide (uber-go/guide). Covers naming, imports, error handling, concurrency, performance, testing patterns, and linting. Use when writing, reviewing, or refactoring any Go code (.go files, go.mod present), when the user mentions "Uber style", "Go style guide", "idiomatic Go", or asks for code review of Go code. Source: https://github.com/uber-go/guide/blob/master/style.md'
 ---
 
 # Uber Go Style (project skill)

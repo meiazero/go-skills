@@ -1,0 +1,77 @@
+---
+description: Uber Go Style Guide — naming, errors, concurrency, performance, testing patterns. Auto-applies on Go files.
+globs:
+  - "**/*.go"
+alwaysApply: false
+---
+
+# Uber Go Style
+
+Source: <https://github.com/uber-go/guide/blob/master/style.md>. For full rules with Bad/Good examples, read these topic files at the repo root: [style.md](mdc:style.md) · [guidelines.md](mdc:guidelines.md) · [errors.md](mdc:errors.md) · [concurrency.md](mdc:concurrency.md) · [performance.md](mdc:performance.md) · [testing.md](mdc:testing.md).
+
+## Decision defaults
+
+- Empty slice → return `nil`, not `[]T{}`. Check with `len(s) == 0`.
+- Zero-value struct → `var x T`, not `T{}`.
+- Pointer struct → `&T{Field: v}`, not `new(T)`.
+- Wrap error → `fmt.Errorf("context: %w", err)`. Never `"failed to"`.
+- Goroutine → stop signal + wait mechanism. Always.
+- Mutex → non-pointer field, never embedded, named `mu`.
+- Channel → size 0 or 1. Larger needs justification.
+- Enum → start at `iota + 1` unless 0 is meaningful.
+- Exit → only in `main()`, ideally once via `run()` helper.
+- Time → `time.Duration` / `time.Time`. If forced to int (JSON), suffix unit: `IntervalMillis`.
+- Type assertion → comma-ok always: `t, ok := i.(string)`.
+- Marshaled struct field → tag it (`json:"..."`, `yaml:"..."`).
+
+## Style
+
+- Soft 99-char lines.
+- 2 import groups: stdlib, then everything else, blank line between.
+- Package names: lowercase, singular. Never `util`/`common`/`shared`/`lib`.
+- Group similar declarations (`const`, `var`, `type`).
+- Reduce nesting via early returns / `continue`.
+- No `else` if both branches assign the same variable.
+- Prefix unexported globals with `_` (errors are exceptions: `errFoo`).
+- Embedded fields at top of struct, blank line before regular fields. Never embed a mutex.
+- Always use field names for struct init; omit zero-value fields.
+- Raw string literals to avoid escaping.
+- Format strings outside `Printf` calls must be `const`.
+
+## Errors
+
+- Return as-is when no context to add.
+- Wrap with `%w` when caller may match (default for most wrapping).
+- Wrap with `%v` to deliberately obfuscate.
+- Drop `"failed to"` from messages — pile up uselessly.
+- Naming: exported global → `ErrFoo`. Unexported global → `errFoo` (no underscore). Custom type → `FooError`.
+- **Handle once**: never `log + return`. Either degrade gracefully, or wrap and return.
+
+## Concurrency
+
+- `sync.Mutex` zero value is valid — never `new(sync.Mutex)`.
+- Prefer `go.uber.org/atomic` (`atomic.Bool` etc.) for type safety.
+- No goroutines in `init()`. Expose a type with `Shutdown()` instead.
+- Multiple goroutines → `sync.WaitGroup`. One → `chan struct{}` closed on exit.
+- Copy slices/maps at boundaries when receiving for storage or returning internal state.
+
+## Performance (hot path only)
+
+- `strconv.Itoa` over `fmt.Sprint`.
+- Hoist `[]byte("literal")` constants out of loops.
+- Capacity hints: `make([]T, 0, n)`, `make(map[K]V, n)`.
+
+## Testing
+
+- Table-driven with subtests for repeated logic. `tests` / `tt` / `give` / `want`.
+- Don't pile branching paths (`shouldCallX`, `setupMocks`) into a table — split.
+- `t.Fatal` / `t.FailNow`, never `panic`.
+- Functional options for 3+ optional args (`type Option interface { apply(*options) }`).
+
+## Avoid
+
+Mutable globals · embedding in public structs · built-in names · `init()` for I/O · panics in production · fire-and-forget goroutines.
+
+## Lint
+
+Run `./scripts/lint.sh`. Linters: `errcheck`, `goimports`, `revive`, `govet`, `staticcheck`.

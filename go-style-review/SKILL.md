@@ -12,14 +12,16 @@ Review Go code against the Uber Go Style Guide. One comment per violation: rule 
 1. Identify scope: a file, a package, a PR diff, or a pasted snippet. Stay inside that scope.
 2. Load [checklist.md](checklist.md) — compact scan table of every rule pattern.
 3. Walk the code top-to-bottom. For each match in the checklist, draft a comment using the format below.
-4. Need the verbatim rule text or a Bad/Good example from the guide? Open the topic file:
-   - [style.md](style.md) — naming, imports, struct/map init, scope, embedding, line length, raw strings
-   - [guidelines.md](guidelines.md) — interfaces, receivers, enums, time, type assertions, panics, globals, `init()`, `os.Exit`
-   - [errors.md](errors.md) — wrapping (`%w` vs `%v`), naming (`Err*`/`*Error`), handle-once
-   - [concurrency.md](concurrency.md) — mutexes, channels, goroutines, atomics
-   - [performance.md](performance.md) — `strconv` over `fmt`, byte conversion, capacity hints
-   - [testing.md](testing.md) — table tests, parallel tests, functional options
+4. Need the verbatim rule text or a Bad/Good example from the guide? Open the topic file in the sibling `uber-go-style` skill:
+   - [../uber-go-style/style.md](../uber-go-style/style.md) — naming, imports, struct/map init, scope, embedding, line length, raw strings
+   - [../uber-go-style/guidelines.md](../uber-go-style/guidelines.md) — interfaces, receivers, enums, time, type assertions, panics, globals, `init()`, `os.Exit`
+   - [../uber-go-style/errors.md](../uber-go-style/errors.md) — wrapping (`%w` vs `%v`), naming (`Err*`/`*Error`), handle-once
+   - [../uber-go-style/concurrency.md](../uber-go-style/concurrency.md) — mutexes, channels, goroutines, atomics
+   - [../uber-go-style/performance.md](../uber-go-style/performance.md) — `strconv` over `fmt`, byte conversion, capacity hints
+   - [../uber-go-style/testing.md](../uber-go-style/testing.md) — table tests, parallel tests, functional options
 5. Output the review. End with the summary line.
+
+> Requires the `uber-go-style` skill installed alongside this one (sibling directory). The topic files live there to avoid duplication.
 
 ## Output format
 

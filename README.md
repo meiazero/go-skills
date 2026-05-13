@@ -4,12 +4,12 @@ Two AI-assistant skills based on the [Uber Go Style Guide](https://github.com/ub
 
 | Skill | Purpose |
 |---|---|
-| [`uber-go-style/`](uber-go-style/) | Write/refactor Go code following the guide. Includes a `golangci-lint` wrapper. |
-| [`go-style-review/`](go-style-review/) | Review Go code or diffs. Emits PR-style comments with rule name + unified-diff fix. |
+| [`uber-go-style/`](uber-go-style/) | Write/refactor Go code following the guide. Owns the canonical rule files. Includes a `golangci-lint` wrapper. |
+| [`go-style-review/`](go-style-review/) | Review Go code or diffs. Emits PR-style comments with rule name + unified-diff fix. **Reads rule content from `uber-go-style/` via `../uber-go-style/<topic>.md`.** |
 
-Designed to be used together: the write skill keeps new code in style; the review skill audits existing code or PRs.
+Designed to be used **together** — install both side by side. The review skill links to the topic files in `uber-go-style/` instead of carrying its own copy, so there is no duplication to drift.
 
-Each skill ships with the same six topic files (`style.md`, `guidelines.md`, `errors.md`, `concurrency.md`, `performance.md`, `testing.md`) so it stays standalone after install.
+> If you only install `go-style-review`, the topic-file links break. For Claude Code, always install `uber-go-style` alongside it.
 
 ---
 
@@ -25,7 +25,7 @@ cp -r /tmp/go-skills/go-style-review  ~/.claude/skills/
 rm -rf /tmp/go-skills
 ```
 
-Verify:
+Verify both landed as siblings (the review skill's `../uber-go-style/...` links depend on this):
 
 ```bash
 ls ~/.claude/skills/uber-go-style/SKILL.md
@@ -45,20 +45,20 @@ cp -r /tmp/go-skills/go-style-review  .claude/skills/
 rm -rf /tmp/go-skills
 ```
 
-Commit the `.claude/skills/` directory. Teammates using Claude Code pick the skills up automatically.
+Commit `.claude/skills/`. Teammates pick the skills up automatically.
 
 ---
 
 ## Install — Windsurf
 
-Only the **write** skill applies (Windsurf has no review mode).
+Only the **write** skill applies (Windsurf has no review mode), so the cross-skill dependency does not come up.
 
 ### Global
 
 ```bash
 git clone https://github.com/meiazero/go-skills /tmp/go-skills
 mkdir -p ~/.codeium/windsurf/memories
-# Strip Claude frontmatter, append the rule body to Windsurf's global rules.
+# Strip the Claude frontmatter, append the rule body to Windsurf's global rules.
 awk '/^---$/{c++; next} c>=2' /tmp/go-skills/uber-go-style/SKILL.md \
   >> ~/.codeium/windsurf/memories/global_rules.md
 rm -rf /tmp/go-skills
@@ -96,7 +96,7 @@ Only the **write** skill applies.
 cd your-go-project
 git clone https://github.com/meiazero/go-skills /tmp/go-skills
 mkdir -p .github
-# Strip Claude frontmatter, save as Copilot repo-level instructions.
+# Strip the Claude frontmatter, save as Copilot repo-level instructions.
 awk '/^---$/{c++; next} c>=2' /tmp/go-skills/uber-go-style/SKILL.md \
   > .github/copilot-instructions.md
 # Optional: copy the topic files for deep reference.
@@ -170,41 +170,26 @@ Install `golangci-lint`: <https://golangci-lint.run/usage/install/>.
 
 ```
 go-skills/
-├── _shared/                # canonical rule files (source of truth)
+├── uber-go-style/          # write skill — canonical home of the rule files
+│   ├── SKILL.md
+│   ├── scripts/lint.sh
 │   ├── style.md
 │   ├── guidelines.md
 │   ├── errors.md
 │   ├── concurrency.md
 │   ├── performance.md
 │   └── testing.md
-├── uber-go-style/          # write skill (standalone, ready to install)
-│   ├── SKILL.md
-│   ├── scripts/lint.sh
-│   └── *.md                # synced from _shared/
-├── go-style-review/        # review skill (standalone, ready to install)
+├── go-style-review/        # review skill — links to ../uber-go-style/<topic>.md
 │   ├── SKILL.md
 │   ├── checklist.md
-│   ├── examples.md
-│   └── *.md                # synced from _shared/
-├── scripts/
-│   └── sync.sh             # _shared/ → each skill
+│   └── examples.md
+├── LICENSE
 └── README.md
 ```
 
-### Maintaining the rules (contributors)
+### Editing the rules
 
-Canonical rule content lives in `_shared/`. To change a rule:
-
-```bash
-$EDITOR _shared/errors.md   # edit canonical
-./scripts/sync.sh           # propagate to both skills
-```
-
-Check drift in CI:
-
-```bash
-./scripts/sync.sh --check   # exits non-zero if any skill is out of sync
-```
+The canonical rule content lives in `uber-go-style/<topic>.md`. Edit there — `go-style-review` reads the same files via relative paths, so no sync step is needed.
 
 ---
 
